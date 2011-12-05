@@ -19,8 +19,8 @@ class Banner
   property :url, Text,     :required => true
 end
 # automatically create the table
-Banner.auto_migrate! unless Banner.storage_exists?
-#DataMapper.auto_upgrade!
+#Banner.auto_migrate! unless Banner.storage_exists?
+DataMapper.auto_upgrade!
 
 class Movies
   def initialize(filename)
