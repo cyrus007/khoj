@@ -4,12 +4,10 @@ require 'sinatra'
 require 'json'
 require 'nokogiri'
 require 'open-uri'
-require 'dm-core'
-require 'dm-migrations'
+require 'data_mapper'
 #require './periodic'
 
-#DataMapper.setup(:default, "appengine://auto")
-DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/dm.db")
+DataMapper.setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/mydb')
 
 class Banner
   include DataMapper::Resource
