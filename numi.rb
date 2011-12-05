@@ -7,7 +7,7 @@ require 'open-uri'
 require 'data_mapper'
 #require './periodic'
 
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/mydb')
+DataMapper.setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/numi.db')
 
 class Banner
   include DataMapper::Resource
