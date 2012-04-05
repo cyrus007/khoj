@@ -8,7 +8,7 @@ require 'data_mapper'
 #require './periodic'
 
 DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/numi.db')
+DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite3://#{Dir.pwd}/dm.db')
 
 class Banner
   include DataMapper::Resource
@@ -71,7 +71,7 @@ class Rangu < Scraper
       node = doc.css('div.middle_movies > div.post > h2')
       title = node.inner_html
       node = doc.css('div.middle_movies > div.post > div')
-      lines = node[1].to_s.split('<br'); line_nos = lines.length
+      lines = node[2].to_s.split('<br'); line_nos = lines.length
       if lines.length < 3
         return "No servers found", 1
       else
