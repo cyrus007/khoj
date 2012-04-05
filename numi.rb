@@ -5,6 +5,7 @@ require 'json'
 require 'nokogiri'
 require 'open-uri'
 require 'data_mapper'
+require 'em-http'
 #require './periodic'
 
 DataMapper::Logger.new($stdout, :debug)
@@ -182,4 +183,41 @@ get '/:src/getvids' do |src|
     else
       result.to_json
     end
+end
+
+get '/:src/scrape' do |src|
+    halt(404, 'Not implemented') if src != 'rangu' or src.empty?
+    if src == 'rangu'
+      dbfile = 'rangu-db.json'
+      URL = "http://movies.rangu.com/hindi-movies-list-a-to-z"
+    elsif src == 'stt'
+      URL = "http://www.sominaltvtheater.com/2010/11/hindi-movies.html"
+      dbfile = 'stt-db.json'
+    elsif src == 'bm'
+      dbfile = 'bm-db.json'
+    else
+      halt(404, 'Should not have reached here.')
+    end
+    request = EM::HttpRequest.new(URL).get
+    request.callback {
+      if request.response_header.status == 200
+        page = request.response
+        doc = Nokogiri::HTML(page)
+        node = doc.css('div.tabcontentstyle').first
+        links = []
+        node.css('div.tabcontent > ul > li').map do |item|
+          href = item.children.first.attr("href").to_s
+          next links unless href =~ /(http[^"]+)/
+          url = $1
+          name = item.xpath('.//text()').text
+          links << { :title => name, :url => url }
+        end
+        File.open(dbfile, "w") { |file| file.write(links.to_json) }
+      else
+        return "Fetching page from " + URL + " failed."
+      end
+    }
+    request.errback {
+      return "Error connecting to " + URL
+    }
 end
