@@ -9,7 +9,8 @@ require 'em-http'
 #require './periodic'
 
 DataMapper::Logger.new($stdout, :debug)
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite3://#{Dir.pwd}/dm.db')
+#DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite3://#{Dir.pwd}/dm.db')
+DataMapper.setup(:default, ENV['DATABASE_URL'] || 'sqlite3://dm.db')
 
 class Banner
   include DataMapper::Resource
@@ -21,7 +22,7 @@ class Banner
 end
 # automatically create the table
 #Banner.auto_migrate! unless Banner.storage_exists?
-DataMapper.auto_upgrade!
+#DataMapper.auto_upgrade!
 
 class Movies
   def initialize(filename)
