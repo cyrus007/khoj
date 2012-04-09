@@ -73,18 +73,20 @@ class Rangu < Scraper
       node = doc.css('div.middle_movies > div.post > h2')
       title = node.inner_html
       node = doc.css('div.middle_movies > div.post > div')
+      imgnode = node[2].css('p > img')
+      img = imgnode[0].attr('src').to_s
+
       lines = node[2].to_s.split('<br'); line_nos = lines.length
       if lines.length < 3
         return "No servers found", 1
       else
-        splice = lines[0].split('src=')[1].match(/\"([^\"]+)\"/); img = $1.to_s
-        banner = Banner.first(:src => @src, :title => title) rescue nil
         cnt = 0
         begin
           splice = lines[cnt].strip; cnt += 1
         end while !splice.include? "Online"
         output = extract(lines, cnt)
 
+        banner = Banner.first(:src => @src, :title => title) rescue nil
         banner ||= Banner.create(:src => @src, :title => title, :url => img) unless img.empty? || title.empty?  #same as new + save
         result = { :title => title, :img => img, :servers => output }
         return result, 0
@@ -101,7 +103,7 @@ class Rangu < Scraper
               links = server.split('</a>'); link_nos = links.length
               j = 0
               while j < links.length
-                links[j].match(/href=\"([^&]+)&/); link = $1.to_s
+                links[j].match(/href=\"([^"]+)"/); link = $1.to_s
                 links[j].match(/href=\"([^\"]+)\"/) && link = $1.to_s if link.empty? 
                 s << link unless (link.nil? || link.empty?)
                 j += 1
@@ -115,7 +117,7 @@ class Rangu < Scraper
                 links = server.split('</a>'); link_nos = links.length
                 j = 0
                 while j < links.length
-                  links[j].match(/href=\"([^&]+)&/); link = $1.to_s
+                  links[j].match(/href=\"([^"]+)"/); link = $1.to_s
                   links[j].match(/href=\"([^\"]+)\"/) && link = $1.to_s if link.empty? 
                   s << link unless (link.nil? || link.empty?)
                   j += 1
